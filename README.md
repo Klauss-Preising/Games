@@ -1,7 +1,7 @@
 # Games
 Using Pygame to create python games
 
-Anaconda installation <br />
+Anaconda installation: <br />
 conda install -c cogsci pygame 
 
 Windows installation (without Anaconda): <br />
