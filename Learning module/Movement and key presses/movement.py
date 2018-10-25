@@ -20,7 +20,7 @@ run = True
 while run:
 
     # delay in ms
-    time.delay(100)
+    time.delay(60)
 
     for events in event.get():
         if events.type == QUIT:
@@ -28,13 +28,13 @@ while run:
 
     keys = key.get_pressed()
 
-    if keys[K_LEFT]:
+    if keys[K_LEFT] and x_object > speed_object:
         x_object -= speed_object
-    if keys[K_RIGHT]:
+    if keys[K_RIGHT] and x_object < width - width_object - speed_object:
         x_object += speed_object
-    if keys[K_UP]:
+    if keys[K_UP] and y_object > speed_object:
         y_object -= speed_object
-    if keys[K_DOWN]:
+    if keys[K_DOWN] and y_object < height - height_object - speed_object:
         y_object += speed_object
 
     win.fill((0, 0, 0))
