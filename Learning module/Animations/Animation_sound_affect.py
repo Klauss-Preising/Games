@@ -62,6 +62,8 @@ class player(object):
         # draw.rect(win, (250, 0, 0), self.hitbox, 2)
 
     def hit(self):
+        self.isJump = False
+        self.jumpCount = 8
         self.x = 60
         self.y = 410
         self.walkCount = 0
@@ -155,7 +157,7 @@ def redrawGameWindow():
     win.blit(bg, (0, 0))
     man.draw(win)
     text = foop.render("Score:" + str(foo.hitCounter), 1, (0, 0, 0))
-    win.blit(text,  (390, 10))
+    win.blit(text,  (360, 10))
     for bullet in bullets:
         bullet.draw(win)
     foo.draw(win)
@@ -171,11 +173,11 @@ foo = enemy(100, 410, 64, 64, 300)
 run = True
 while run:
     clock.tick(30)
-
-    if man.hitbox[1] < foo.hitbox[1] + foo.hitbox[3] and man.hitbox[1] + man.hitbox[3] > foo.hitbox[1]:
-        if man.hitbox[0] + man.hitbox[2] > foo.hitbox[0] and man.hitbox[0] < foo.hitbox[0] + foo.hitbox[2]:
-            man.hit()
-            foo.hitCounter -= 5
+    if foo.health > 0:
+        if man.hitbox[1] < foo.hitbox[1] + foo.hitbox[3] and man.hitbox[1] + man.hitbox[3] > foo.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > foo.hitbox[0] and man.hitbox[0] < foo.hitbox[0] + foo.hitbox[2]:
+                man.hit()
+                foo.hitCounter -= 5
     if shoot_cdr > 0:
         shoot_cdr += 1
     if shoot_cdr > 5:
