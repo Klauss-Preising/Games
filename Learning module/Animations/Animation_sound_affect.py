@@ -1,5 +1,6 @@
 from pygame import *
 init()
+mixer.pre_init(44100, 16, 2, 4096)
 # size = (500, 500)
 size = width, height = 500, 480
 
@@ -9,6 +10,12 @@ win = display.set_mode(size)
 # setting caption
 display.set_caption("Game: movement")
 
+clock = time.Clock()
+
+bulletSound = mixer.Sound('bullet.wav')
+
+music = mixer.music.load('images/music.mp3')
+mixer.music.play(-1)
 
 walkRight = [image.load("images/R" + str(i) + ".png") for i in range(1, 10)]
 walkLeft = [image.load("images/L" + str(i) + ".png") for i in range(1, 10)]
@@ -54,6 +61,22 @@ class player(object):
         self.hitbox = (self.x + 17, self.y + 11, 29, 52)
         # draw.rect(win, (250, 0, 0), self.hitbox, 2)
 
+    def hit(self):
+        self.x = 60
+        self.y = 410
+        self.walkCount = 0
+        font1 = font.SysFont('comicsans', 100)
+        text = font1.render('-5', 1, (255, 0, 0))
+        win.blit(text, (250 - (text.get_width() / 2), 200))
+        display.update()
+        i = 0
+        while i < 300:
+            time.delay(10)
+            i += 1
+            for e in event.get():
+                if e.type == QUIT:
+                    i = 301
+                    quit()
 
 class projectile(object):
     def __init__(self,x,y,radius,color,facing):
@@ -147,8 +170,12 @@ shoot_cdr = 0
 foo = enemy(100, 410, 64, 64, 300)
 run = True
 while run:
-    clock.tick(27)
+    clock.tick(30)
 
+    if man.hitbox[1] < foo.hitbox[1] + foo.hitbox[3] and man.hitbox[1] + man.hitbox[3] > foo.hitbox[1]:
+        if man.hitbox[0] + man.hitbox[2] > foo.hitbox[0] and man.hitbox[0] < foo.hitbox[0] + foo.hitbox[2]:
+            man.hit()
+            foo.hitCounter -= 5
     if shoot_cdr > 0:
         shoot_cdr += 1
     if shoot_cdr > 5:
@@ -159,10 +186,12 @@ while run:
             run = False
 
     for bullet in bullets:
-        if bullet.y - bullet.radius < foo.hitbox[1] + foo.hitbox[3] and bullet.y + bullet.radius > foo.hitbox[1]:
-            if bullet.x + bullet.radius > foo.hitbox[0] and bullet.x - bullet.radius < foo.hitbox[0] + foo.hitbox[2]:
-                foo.hit()
-                bullets.pop(bullets.index(bullet))
+        if foo.health > 0:
+            if bullet.y - bullet.radius < foo.hitbox[1] + foo.hitbox[3] and bullet.y + bullet.radius > foo.hitbox[1]:
+                if bullet.x + bullet.radius > foo.hitbox[0] and bullet.x - bullet.radius < foo.hitbox[0] + foo.hitbox[2]:
+                    foo.hit()
+                    bullets.pop(bullets.index(bullet))
+
         if (bullet.x < 500) and (bullet.x > 0):
             bullet.x += bullet.vel
         else:
@@ -173,6 +202,7 @@ while run:
     if keys[K_SPACE] and shoot_cdr == 0:
         if len(bullets) < 5:
             bullets.append(projectile(round(man.x + man.width // 2), round(man.y + man.height // 2), 6, (0, 0, 0), -1 if man.left else 1))
+            bulletSound.play()
         shoot_cdr = 1
 
     if keys[K_LEFT] and man.x > man.vel:
